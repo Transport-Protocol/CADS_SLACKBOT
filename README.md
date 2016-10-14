@@ -16,6 +16,6 @@ Make sure you **not upload** your token!
 
 Sending a message with the specified SlackBot.
 ```
-python3 bot_send_message.py hello
+python3 bot_send_message.py "hello from python script"
 ```
 This posts a hello to the specified channel.
