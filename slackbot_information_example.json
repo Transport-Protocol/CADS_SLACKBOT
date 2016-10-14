@@ -1,0 +1,10 @@
+{
+  "token" : "here you have to fill your token generated on Slack website",
+  "bot_name" : "example bot name",
+  "avatar" : ":point_up_2:",
+  "default_channel_send" : "channel you want to write messages to"
+}
+
+## icon name
+## hostname
+## channel which to write and read
