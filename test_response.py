@@ -10,7 +10,7 @@ BOT_NAME = 'cads_north'
 # needs to be hidden!
 # TODO follow these instructions: https://www.fullstackpython.com/blog/build-first-slack-bot-python.html to hide the key
 # token = os.environ.get('SLACK_TOKEN')
-token = 'xoxb-90321919568-yTVYKEbCJ6Lz5WRmWqMgfrQn'
+token = "not valid"
 
 slack_client = SlackClient(token)
 
