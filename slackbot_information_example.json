@@ -3,5 +3,6 @@
   "bot_name" : "example bot name",
   "bot_id" : "will be filled when test_your_bot_configuration.py was executed",
   "avatar" : ":point_up_2:",
-  "default_channel_send" : "channel you want to write messages to"
+  "default_channel_send" : "channel you want to write messages to",
+  "channels_to_read" : ["test1", "test2_without_beginning_hashTag_#"]
 }

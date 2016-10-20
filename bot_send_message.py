@@ -30,7 +30,7 @@ if len(sys.argv) == 2:
     slack_client = SlackClient(json_bot_information["token"])
 
     slack_client.api_call("chat.postMessage",
-                          channel=json_bot_information["default_channel_send"],
+                          channel="#" + str(json_bot_information["default_channel_send"]),
                           text=message,
                           username=json_bot_information["bot_name"],
                           icon_emoji=json_bot_information["avatar"])
