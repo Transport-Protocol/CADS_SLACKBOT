@@ -5,13 +5,18 @@ import json
 from slackclient import SlackClient
 
 
-print('Number of arguments:', len(sys.argv), 'arguments.')
-print('Argument List:', str(sys.argv))
+#print('Number of arguments:', len(sys.argv), 'arguments.')
+#print('Argument List:', str(sys.argv))
+
+
+file_name = sys.argv[0].split("/")[-1]
+path_name = sys.argv[0].split(file_name)[0]
+
 
 if len(sys.argv) == 2:
     # for easier bot customizing, a json file is supported
     ### read jsonFile
-    f = open('slackbot_information.json', 'r')
+    f = open((path_name + 'slackbot_information.json'), 'r')
     string_bot_information = f.read()
 
     ### parse jsonFile
