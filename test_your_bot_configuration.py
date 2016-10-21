@@ -26,7 +26,7 @@ if response["ok"]:
         if 'name' in user and user.get('name') == json_bot_information['bot_name']:
             bot_id = user.get('id')
             # print("Bot ID for '" + user['name'] + "' is " + user.get('id'))
-            # get bot id and fil
+            # get bot id and write id in config.
             json_bot_information["bot_id"] = user.get('id')
             f = open(slackbot_info_file, 'w')
             f.write(json.dumps(json_bot_information))

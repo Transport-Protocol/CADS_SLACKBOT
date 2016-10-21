@@ -10,7 +10,7 @@ Use the slackbot_information_example.json to setup your own slackbot_information
 The bot is using the information specified in the json file to get the wanted behaviour.
 
 ## Attention
-Make sure you **not upload** your token! 
+Make sure that you **not upload** your token! 
 
 ## Examples
 
@@ -19,3 +19,21 @@ Sending a message with the specified SlackBot.
 python3 bot_send_message.py "hello from python script"
 ```
 This posts a hello to the specified channel.
+
+## Install Guide
+
+1. install python3
+2. install pip
+3. install SlackClient, with the following command:
+```
+pip3 install SlackClient
+```
+4. Clone the repository
+5. Fill your information in a file named: "slackbot_information.json" inside of the repository. The field bot_id will be set later.
+6. Run the configuration test.
+```
+python3 test_your_bot_configuration.py
+```
+	+ If a failure occured, correct them.
+7. If the configuration was correct, the bot writes a message in the configured channel.
+8. Now you can use the bot. Have a look at the example above. 
