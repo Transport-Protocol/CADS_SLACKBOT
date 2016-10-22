@@ -32,7 +32,6 @@ pip3 install SlackClient
 6. Run the configuration test.```
 python3 test_your_bot_configuration.py
 ```
-	+ If a failure occured, correct the "slackbot_information.json" file.
 7. If the configuration was correct, the bot writes a message in the configured channel.
 8. Now you can use the bot. Have a look at the example above.
 
