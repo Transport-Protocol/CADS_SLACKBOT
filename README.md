@@ -22,16 +22,18 @@ This posts a hello to the specified channel.
 
 ## Install Guide
 
-1. install python3
-2. install pip
-3. install SlackClient, with the following command:```
++ install python3
++ install pip
++ install SlackClient, with the following command:
+````
 pip3 install SlackClient
-```
-4. Clone the repository
-5. Fill your information in a file named: "slackbot_information.json" inside of the repository. The field bot_id will be set later.
-6. Run the configuration test.```
+````
++ Clone the repository
++ Fill your information in a file named: "slackbot_information.json" inside of the repository. The field bot_id will be set later.
++ Run the configuration test.
+````
 python3 test_your_bot_configuration.py
-```
-7. If the configuration was correct, the bot writes a message in the configured channel.
-8. Now you can use the bot. Have a look at the example above.
+````
++ If the configuration was correct, the bot writes a message in the configured channel.
++ Now you can use the bot. Have a look at the example above.
 
