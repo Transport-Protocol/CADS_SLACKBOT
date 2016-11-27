@@ -2,6 +2,8 @@ from slackclient import SlackClient
 import json
 import sys
 
+import bot_send_message as message_transmitter
+
 file_name = sys.argv[0].split("/")[-1]
 path_name = sys.argv[0].split(file_name)[0]
 slackbot_info_file = path_name + 'slackbot_information.json'
@@ -58,11 +60,7 @@ if response["ok"]:
         print("Not all channels to read were found" + str(channels_to_read))
 
     if found_user and found_send and len(channels_to_read) == found_read:
-        slack_client.api_call("chat.postMessage",
-                              channel=json_bot_information["default_channel_send"],
-                              text="test message!",
-                              username=json_bot_information["bot_name"],
-                              icon_emoji=json_bot_information["avatar"])
+        message_transmitter.transmit_massage(json_bot_information, "test message!")
 
 else:
     print("Token is not correct!")

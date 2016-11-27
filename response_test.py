@@ -2,28 +2,27 @@
 
 import time
 import json
+import argparse
+
 from slackclient import SlackClient
+import bot_send_message as message_transmitter
 
-# request hostname
-BOT_NAME = 'cads_north'
 
-# needs to be hidden!
-# TODO follow these instructions: https://www.fullstackpython.com/blog/build-first-slack-bot-python.html to hide the key
-# token = os.environ.get('SLACK_TOKEN')
-f = open('slackbot_information.json', 'r')
-string_bot_information = f.read()
-
-### parse jsonFile
-json_bot_information = json.loads(string_bot_information)
-slack_client = SlackClient(json_bot_information["token"])
+parser = argparse.ArgumentParser()
+parser.add_argument("--poll_time", type=int, default=1, help="Interval for the message polling")
+args = parser.parse_args()
 
 if __name__ == "__main__":
-    print(slack_client.api_call("api.test"))
-    print(slack_client.api_call("channels.info", channel="1234567890"))
-    print(slack_client.api_call(
-        "chat.postMessage", channel="#mp_testbed", text="Hello from Python! :tada:",
-        username='cads_north', icon_emoji=':point_up_2:'))
+    poll_time = args.poll_time
 
+    f = open('slackbot_information.json', 'r')
+    string_bot_information = f.read()
+
+    # parse jsonFile
+    json_bot_information = json.loads(string_bot_information)
+    slack_client = SlackClient(json_bot_information["token"])
+
+    # Get Bot ID
     bot_id = 0
     api_call = slack_client.api_call("users.list")
     users = api_call.get('members')
@@ -32,7 +31,24 @@ if __name__ == "__main__":
             bot_id = user.get('id')
             print("Bot ID for '" + user['name'] + "' is " + user.get('id'))
 
+    # Get Channel List
+    requested_channels_list = json_bot_information['channels_to_read']
+    channel_id_list = []
+    channel_name_dict = {}
+
+    api_call = slack_client.api_call("channels.list")
+    channels = api_call.get('channels')
+
+    for channel in channels:
+        if channel['name'] in requested_channels_list:
+            channel_id_list.append(channel['id'])
+            channel_name_dict[channel['id']] = channel['name']
+
+    print(channel_id_list)
+
     print("Other Test! \n\n")
+
+    # Poll messages
     if slack_client.rtm_connect():
         while True:
 
@@ -41,33 +57,23 @@ if __name__ == "__main__":
             for text in text_in:
                 print(text)
                 if text['type'] == 'message' and 'subtype' not in dict(text).keys():
-                    # print("text: " + str(text))
-                    if text['text'].find("<@" + str(bot_id) + ">", 0, len(text['text'])) != -1:
-                        if text['text'].find("/status"):
-                            print(slack_client.api_call(
-                                "chat.postMessage", channel="#mp_testbed", text="This is my status",
-                                username='cads_north', icon_emoji=':point_up_2:'))
+                    print("Got here! 1")
+                    if 'channel' in text and text['channel'] in channel_id_list:
+                        print("Got here! 2 ")
+                        # print("text: " + str(text))
+                        if text['text'].find("<@" + str(bot_id) + ">", 0, len(text['text'])) != -1:
+                            if text['text'].find("/status"):
+                                print("Got here! 3")
+                                message_transmitter.transmit_massage(json_bot_information["token"],
+                                                                     channel_name_dict[text['channel']],
+                                                                     json_bot_information["bot_name"],
+                                                                     json_bot_information["avatar"],
+                                                                     "This is my status")
 
-            time.sleep(1)
-            # print(slack_client.api_call(
-            #     "chat.postMessage", channel="#mp_testbed", text="test",
-            #     username='cads_north', icon_emoji=':point_up_2:'))
-            # json_obj = json.load(text_in)
-            # if json_obj['message']['subtype'] != 'bot_message':
-            #    print(text_in['message']['text'])
+            time.sleep(poll_time)
 
     else:
         print("Connection Failed, invalid token?")
-
-
-def send_message(channel_id, message):
-    slack_client.api_call(
-        "chat.postMessage",
-        channel=channel_id,
-        text=message,
-        username='pythonbot',
-        icon_emoji=':robot_face:'
-    )
 
 # Different way to read messages. This way is without message polling!
 # TODO more information on https://realpython.com/blog/python/getting-started-with-the-slack-api-using-python-and-flask/

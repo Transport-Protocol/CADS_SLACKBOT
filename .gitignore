@@ -5,6 +5,7 @@
 **/.DS_Store
 slackbot_information.json
 .idea
+__pycache__
 
 
 ### macOS ###
