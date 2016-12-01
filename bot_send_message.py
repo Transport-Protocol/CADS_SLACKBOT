@@ -6,12 +6,12 @@ import json
 from slackclient import SlackClient
 
 
-def transmit_massage(json_bot_information, message):
-    transmit_massage(json_bot_information["token"], json_bot_information["default_channel_send"],
+def transmit_message(json_bot_information, message):
+    transmit_message(json_bot_information["token"], json_bot_information["default_channel_send"],
                      json_bot_information["bot_name"], json_bot_information["avatar"], message)
 
 
-def transmit_massage(token, transmit_channel, bot_name, avatar, message):
+def transmit_message(token, transmit_channel, bot_name, avatar, message):
     slack_client = SlackClient(token)
     slack_client.api_call("chat.postMessage",
                           channel="#" + str(transmit_channel),
@@ -34,4 +34,4 @@ if __name__ == '__main__':
 
         message = sys.argv[1]
 
-        transmit_massage(json_bot_information, message)
+        transmit_message(json_bot_information, message)

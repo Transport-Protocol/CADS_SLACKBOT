@@ -1,5 +1,4 @@
 #!/bin/python3
-
 import time
 import json
 import argparse
@@ -15,24 +14,38 @@ args = parser.parse_args()
 if __name__ == "__main__":
     poll_time = args.poll_time
 
-    f = open('slackbot_information.json', 'r')
-    string_bot_information = f.read()
 
-    # parse jsonFile
-    json_bot_information = json.loads(string_bot_information)
-    slack_client = SlackClient(json_bot_information["token"])
+    # read bot information
+    f = open('slackbot_information.json', 'r')
+    string_slack_bot_information = f.read()
+    f.close()
+
+    # read response information
+    f = open('slackbot_response.json', 'r')
+    string_slack_bot_response = f.read()
+    f.close()
+
+    # parse bot information
+    json_slack_bot_information = json.loads(string_slack_bot_information)
+
+    # parse response information
+    json_slack_bot_response = json.loads(string_slack_bot_response)
+    print(json_slack_bot_response)
+
+    # create SlackClient
+    slack_client = SlackClient(json_slack_bot_information["token"])
 
     # Get Bot ID
     bot_id = 0
     api_call = slack_client.api_call("users.list")
     users = api_call.get('members')
     for user in users:
-        if 'name' in user and user.get('name') == json_bot_information['bot_name']:
+        if 'name' in user and user.get('name') == json_slack_bot_information['bot_name']:
             bot_id = user.get('id')
             print("Bot ID for '" + user['name'] + "' is " + user.get('id'))
 
     # Get Channel List
-    requested_channels_list = json_bot_information['channels_to_read']
+    requested_channels_list = json_slack_bot_information['channels_to_read']
     channel_id_list = []
     channel_name_dict = {}
 
@@ -57,17 +70,15 @@ if __name__ == "__main__":
             for text in text_in:
                 print(text)
                 if text['type'] == 'message' and 'subtype' not in dict(text).keys():
-                    print("Got here! 1")
                     if 'channel' in text and text['channel'] in channel_id_list:
-                        print("Got here! 2 ")
                         # print("text: " + str(text))
                         if text['text'].find("<@" + str(bot_id) + ">", 0, len(text['text'])) != -1:
                             if text['text'].find("/status"):
                                 print("Got here! 3")
-                                message_transmitter.transmit_massage(json_bot_information["token"],
+                                message_transmitter.transmit_message(json_slack_bot_information["token"],
                                                                      channel_name_dict[text['channel']],
-                                                                     json_bot_information["bot_name"],
-                                                                     json_bot_information["avatar"],
+                                                                     json_slack_bot_information["bot_name"],
+                                                                     json_slack_bot_information["avatar"],
                                                                      "This is my status")
 
             time.sleep(poll_time)

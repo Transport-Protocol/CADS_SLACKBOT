@@ -1,0 +1,1 @@
+{"responses": [{"keyword": "directory", "action" : "dir"}, {"keyword": "directory_overview", "action" : "ls -al"}]}

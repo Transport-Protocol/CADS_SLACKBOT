@@ -60,7 +60,7 @@ if response["ok"]:
         print("Not all channels to read were found" + str(channels_to_read))
 
     if found_user and found_send and len(channels_to_read) == found_read:
-        message_transmitter.transmit_massage(json_bot_information, "test message!")
+        message_transmitter.transmit_message(json_bot_information, "test message!")
 
 else:
     print("Token is not correct!")
