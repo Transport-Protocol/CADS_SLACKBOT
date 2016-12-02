@@ -1,0 +1,11 @@
+{
+  "bot_system_user": {"help": "Shows slack bot user on the system.", "command" : "id"},
+  "user_in_groups": {"help": "Shows all user and groups.", "command" : "less /etc/group"},
+  "w": {"help": "Shows all logged in users and what they are doing.", "command" : "w"},
+  "users": {"help": "Shows all logged in users.", "command" : "users"},
+  "disk_usage": {"help": "Shows free disk space.", "command" : "df -h"},
+  "hostname" : {"help": "Shows the hostname.", "command" : "hostname"},
+  "uptime" : {"help": "Shows the uptime.", "command" : "uptime"},
+  "network" : {"help": "Shows the uptime.", "command" : "ifconfig | grep -E \"(eth|inet)\""}
+
+}

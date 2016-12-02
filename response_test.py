@@ -2,6 +2,7 @@
 import time
 import json
 import argparse
+import os
 
 from slackclient import SlackClient
 import bot_send_message as message_transmitter
@@ -11,32 +12,48 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--poll_time", type=int, default=1, help="Interval for the message polling")
 args = parser.parse_args()
 
-if __name__ == "__main__":
-    poll_time = args.poll_time
+
+def evaluate_slack_text_and_react(text, responses, json_slack_bot_information):
+    # find keywords
+    for key in responses.keys():
+        if text['text'].find("/" + key) != -1:
+            output = os.popen(responses[key]["command"]).read()
+            print("************* " + responses[key]["command"] + "*************")
+            to_send = "************* " + responses[key]["command"] + " *************\n" + output
+
+            message_transmitter.transmit_message(json_slack_bot_information["token"],
+                                                 channel_name_dict[text['channel']],
+                                                 json_slack_bot_information["bot_name"],
+                                                 json_slack_bot_information["avatar"],
+                                                 to_send)
 
 
-    # read bot information
-    f = open('slackbot_information.json', 'r')
-    string_slack_bot_information = f.read()
-    f.close()
+def is_relevant_message(text):
+    return text['type'] == 'message' and 'subtype' not in dict(text).keys()
 
-    # read response information
-    f = open('slackbot_response.json', 'r')
-    string_slack_bot_response = f.read()
-    f.close()
 
-    # parse bot information
-    json_slack_bot_information = json.loads(string_slack_bot_information)
+def channel_is_relevant(text, channel_id_list):
+    return 'channel' in text and text['channel'] in channel_id_list
 
-    # parse response information
-    json_slack_bot_response = json.loads(string_slack_bot_response)
-    print(json_slack_bot_response)
 
-    # create SlackClient
-    slack_client = SlackClient(json_slack_bot_information["token"])
+def bot_tag_found(text, bot_id):
+    return text['text'].find("<@" + str(bot_id) + ">", 0, len(text['text'])) != -1
 
-    # Get Bot ID
-    bot_id = 0
+
+def create_channel_lists(channels):
+    channel_id_list = []
+    channel_name_dict = {}
+
+    for channel in channels:
+        if channel['name'] in requested_channels_list:
+            channel_id_list.append(channel['id'])
+            channel_name_dict[channel['id']] = channel['name']
+
+    return channel_id_list, channel_name_dict
+
+
+def get_bot_id(slack_client, json_slack_bot_information):
+    bot_id = -1
     api_call = slack_client.api_call("users.list")
     users = api_call.get('members')
     for user in users:
@@ -44,7 +61,38 @@ if __name__ == "__main__":
             bot_id = user.get('id')
             print("Bot ID for '" + user['name'] + "' is " + user.get('id'))
 
-    # Get Channel List
+    return bot_id
+
+
+def read_json_file(file_path):
+    f = open(file_path, 'r')
+    json_string = f.read()
+    f.close()
+
+    return json_string
+
+if __name__ == "__main__":
+    poll_time = args.poll_time
+
+    # read bot information
+    string_slack_bot_information = read_json_file('slackbot_information.json')
+
+    # read response information
+    string_slack_bot_response = read_json_file('slackbot_response.json')
+
+    # parse bot information
+    json_slack_bot_information = json.loads(string_slack_bot_information)
+
+    # parse response information
+    responses = json.loads(string_slack_bot_response)
+    #print(responses)
+
+    # create SlackClient
+    slack_client = SlackClient(json_slack_bot_information["token"])
+
+    # Get Bot ID
+    bot_id = get_bot_id(slack_client, json_slack_bot_information)
+
     requested_channels_list = json_slack_bot_information['channels_to_read']
     channel_id_list = []
     channel_name_dict = {}
@@ -52,34 +100,23 @@ if __name__ == "__main__":
     api_call = slack_client.api_call("channels.list")
     channels = api_call.get('channels')
 
-    for channel in channels:
-        if channel['name'] in requested_channels_list:
-            channel_id_list.append(channel['id'])
-            channel_name_dict[channel['id']] = channel['name']
-
-    print(channel_id_list)
-
-    print("Other Test! \n\n")
+    channel_id_list, channel_name_dict = create_channel_lists(channels)
 
     # Poll messages
     if slack_client.rtm_connect():
         while True:
-
+            # read all inputs
             text_in = slack_client.rtm_read()
-            # print("incoming" + str(text_in) + str(type(text_in)))
+
             for text in text_in:
-                print(text)
-                if text['type'] == 'message' and 'subtype' not in dict(text).keys():
-                    if 'channel' in text and text['channel'] in channel_id_list:
-                        # print("text: " + str(text))
-                        if text['text'].find("<@" + str(bot_id) + ">", 0, len(text['text'])) != -1:
-                            if text['text'].find("/status"):
-                                print("Got here! 3")
-                                message_transmitter.transmit_message(json_slack_bot_information["token"],
-                                                                     channel_name_dict[text['channel']],
-                                                                     json_slack_bot_information["bot_name"],
-                                                                     json_slack_bot_information["avatar"],
-                                                                     "This is my status")
+                #print(text)
+
+                if is_relevant_message(text):
+                    if channel_is_relevant(text, channel_id_list):
+                        # is message for bot
+                        if bot_tag_found(text, bot_id):
+                            #print(text['text'])
+                            evaluate_slack_text_and_react(text, responses, json_slack_bot_information)
 
             time.sleep(poll_time)
 
