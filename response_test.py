@@ -14,9 +14,22 @@ args = parser.parse_args()
 
 
 def evaluate_slack_text_and_react(text, responses, json_slack_bot_information):
+    to_send = ""
+    if text['text'].find("help") != -1:
+        to_send = "************* Help *************\n"
+        for key in responses.keys():
+            to_send += "Key: " + key + " \t,HelpText: " + responses[key]["help"] +"\n"
+
+        message_transmitter.transmit_message(json_slack_bot_information["token"],
+                                             channel_name_dict[text['channel']],
+                                             json_slack_bot_information["bot_name"],
+                                             json_slack_bot_information["avatar"],
+                                             to_send)
+        return "test"
+
     # find keywords
     for key in responses.keys():
-        if text['text'].find("/" + key) != -1:
+        if text['text'].find(key) != -1:
             output = os.popen(responses[key]["command"]).read()
             print("************* " + responses[key]["command"] + "*************")
             to_send = "************* " + responses[key]["command"] + " *************\n" + output
