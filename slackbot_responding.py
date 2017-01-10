@@ -5,7 +5,7 @@ import argparse
 import os
 
 from slackclient import SlackClient
-import bot_send_message as message_transmitter
+import slackbot_send_message as message_transmitter
 
 
 parser = argparse.ArgumentParser()
@@ -14,6 +14,8 @@ args = parser.parse_args()
 
 
 def evaluate_slack_text_and_react(text, responses, json_slack_bot_information):
+    print("*************************** react **************************")
+    print(text)
     to_send = ""
     if text['text'].find("help") != -1:
         to_send = "************* Help *************\n"
@@ -91,14 +93,14 @@ if __name__ == "__main__":
     string_slack_bot_information = read_json_file('slackbot_information.json')
 
     # read response information
-    string_slack_bot_response = read_json_file('slackbot_response.json')
+    string_slack_bot_response = read_json_file('slackbot_commands.json')
 
     # parse bot information
     json_slack_bot_information = json.loads(string_slack_bot_information)
 
     # parse response information
     responses = json.loads(string_slack_bot_response)
-    #print(responses)
+    print(responses)
 
     # create SlackClient
     slack_client = SlackClient(json_slack_bot_information["token"])
@@ -122,7 +124,9 @@ if __name__ == "__main__":
             text_in = slack_client.rtm_read()
 
             for text in text_in:
-                #print(text)
+                print()
+                print("************************** NEXT ************************")
+                print(text)
 
                 if is_relevant_message(text):
                     if channel_is_relevant(text, channel_id_list):

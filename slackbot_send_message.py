@@ -6,11 +6,6 @@ import json
 from slackclient import SlackClient
 
 
-def transmit_message(json_bot_information, message):
-    transmit_message(json_bot_information["token"], json_bot_information["default_channel_send"],
-                     json_bot_information["bot_name"], json_bot_information["avatar"], message)
-
-
 def transmit_message(token, transmit_channel, bot_name, avatar, message):
     slack_client = SlackClient(token)
     slack_client.api_call("chat.postMessage",
@@ -34,4 +29,5 @@ if __name__ == '__main__':
 
         message = sys.argv[1]
 
-        transmit_message(json_bot_information, message)
+        transmit_message(json_bot_information["token"], json_bot_information["default_channel_send"],
+                         json_bot_information["bot_name"], json_bot_information["avatar"], message)
