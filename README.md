@@ -45,7 +45,7 @@ pip3 install SlackClient
 + Fill your information in a file named: "slackbot_information.json" inside of the repository. The field bot_id will be set automatically.
 + Run the configuration test.
 ````
-python3 test_your_bot_configuration.py
+python3 slackbot_configuration_test.py
 ````
 + If the configuration was correct, the bot writes a message in the configured channel.
 + Now you can use the bot. Have a look at the example above.
